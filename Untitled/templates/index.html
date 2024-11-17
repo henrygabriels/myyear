@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Year of Veg and Vegetation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00ff9d;
+            --background-color: #1a1a2e;
+            --text-color: #e6e6e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(90, 90, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(255, 90, 90, 0.1) 0%, transparent 50%);
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 1200px; /* Increased max-width */
+            width: 90%;
+            margin: 0 auto;
+            padding: 40px 20px; /* Increased padding */
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .title {
+            text-align: center;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+            font-size: clamp(1.2rem, 3vw, 2rem); /* Further reduced font size range */
+            margin-bottom: 20px; /* Reduced margin */
+            font-family: 'Press Start 2P', cursive;
+            line-height: 1.4;
+            padding: 10px 0; /* Reduced padding */
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px; /* Increased border radius */
+            padding: 20px;
+            margin-bottom: 40px; /* Increased margin */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .weave-button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            color: white;
+            padding: 15px 30px; /* Increased padding */
+            border-radius: 8px; /* Increased border radius */
+            font-size: 1.2em; /* Increased font size */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+            font-family: 'Courier New', monospace;
+        }
+
+        .weave-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+        }
+
+        .story-container {
+            flex-grow: 1;
+            padding: 30px; /* Increased padding */
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px; /* Increased border radius */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            max-height: calc(100vh - 300px); /* Adjusted for larger elements */
+            font-size: 1.1em; /* Increased font size */
+        }
+
+        .sentence {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s forwards;
+            margin-bottom: 20px; /* Increased margin */
+            line-height: 1.8; /* Increased line height */
+            text-align: justify;
+        }
+
+        .book1 {
+            color: #ff6b6b;
+            text-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+        }
+
+        .book2 {
+            color: #4ecdc4;
+            text-shadow: 0 0 5px rgba(78, 205, 196, 0.3);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .story-container::-webkit-scrollbar {
+            width: 12px; /* Increased width */
+        }
+
+        .story-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px; /* Increased border radius */
+        }
+
+        .story-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 6px; /* Increased border radius */
+        }
+
+        @media (max-width: 768px) { /* Changed breakpoint to 768px */
+            body {
+                font-size: 16px; /* Slightly smaller font size for mobile */
+            }
+
+            .container {
+                width: 95%;
+                padding: 20px 10px;
+            }
+
+            .title {
+                font-size: clamp(1rem, 4vw, 1.5rem); /* Further reduced for mobile */
+                margin-bottom: 15px;
+            }
+
+            .weave-button {
+                padding: 12px 24px;
+                font-size: 1.1em;
+            }
+
+            .story-container {
+                padding: 20px;
+                max-height: calc(100vh - 250px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">My Year of Veg and Vegetation</h1>
+        
+        <div class="control-panel">
+            <button class="weave-button" id="weaveButton">Write</button>
+        </div>
+
+        <div class="story-container" id="storyContainer">
+            <!-- Sentences will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        const weaveButton = document.getElementById('weaveButton');
+        const storyContainer = document.getElementById('storyContainer');
+
+        weaveButton.addEventListener('click', fetchNewSentence);
+
+        function fetchNewSentence() {
+            fetch('/get_sentence')
+                .then(response => response.json())
+                .then(data => {
+                    addSentence(data.sentence, data.book);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function addSentence(sentence, bookClass) {
+            const p = document.createElement('p');
+            p.className = `sentence ${bookClass}`;
+            p.textContent = sentence;
+            p.style.animationDelay = `${storyContainer.children.length * 0.2}s`;
+            storyContainer.appendChild(p);
+            storyContainer.scrollTop = storyContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
